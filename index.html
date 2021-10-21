@@ -1,0 +1,109 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="https://unpkg.com/pdf-lib@1.17.0"></script>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+
+  <body>
+    <p>Click the button to read a PDF document's metadata with <code>pdf-lib</code></p>
+    <input type="file" id="input" multiple>
+    <button onclick="readPdfMetadata()">Read PDF Metadata</button>
+    <ul id="metadata-list"></ul>
+  </body>
+
+  <script>
+    const { PDFDocument, StandardFonts, rgb, degrees } = PDFLib
+    
+    const readIt = async function(pdfBytes) {
+    // Load the PDF document without updating its existing metadata
+      const pdfDoc = await PDFDocument.load(pdfBytes, { 
+        updateMetadata: false,
+        ignoreEncryption: true
+      })
+
+			// Read all available metadata fields      
+      const title = pdfDoc.getTitle();
+      const author = pdfDoc.getAuthor();
+      const subject = pdfDoc.getSubject();
+      const creator = pdfDoc.getCreator();
+      const keywords = pdfDoc.getKeywords();
+      const producer = pdfDoc.getProducer();
+      const creationDate = pdfDoc.getCreationDate();
+      const modificationDate = pdfDoc.getModificationDate();
+      
+			// Display all available metadata fields   
+      document.getElementById('metadata-list').innerHTML = `
+        <li>Title: ${title}</li>
+        <li>Author: ${author}</li>
+        <li>Creator: ${creator}</li>
+        <li>Keywords: ${keywords}</li>
+        <li>Producer: ${producer}</li>
+        <li>Creation Date: ${creationDate?.toISOString()}</li>
+        <li>Modification Date: ${modificationDate?.toISOString()}</li>
+      `;
+
+      modifyIt(pdfDoc)
+    }
+
+    const modifyIt = async function(pdfDoc) {
+        const pages = pdfDoc.getPages()
+        const firstPage = pages[0]
+
+        // Get the width and height of the first page
+        const { width, height } = firstPage.getSize()
+
+        const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
+
+        firstPage.drawText('This text was added with JavaScript!', {
+            x: 5,
+            y: height / 2 + 300,
+            size: 50,
+            font: helveticaFont,
+            color: rgb(0.95, 0.1, 0.1),
+            rotate: degrees(-45),
+        })
+
+        firstPage.setSize(width/2, height/2)
+
+        const pdfBytes = await pdfDoc.save()
+
+        downloadBlob(pdfBytes, 'your-file.pdf', 'application/octet-stream');
+    }
+
+    const readPdfMetadata = async function() {
+   	    const selectedFile = document.getElementById('input').files[0];
+      
+        const reader = new FileReader()
+      
+        reader.onload = function() {
+            let arrayBuffer = this.result
+            readIt(arrayBuffer)
+        }
+      
+        reader.readAsArrayBuffer(selectedFile);
+    }
+
+
+
+    const downloadURL = (data, fileName) => {
+        const a = document.createElement('a')
+        a.href = data
+        a.download = fileName
+        document.body.appendChild(a)
+        a.style.display = 'none'
+        a.click()
+        a.remove()
+    }
+
+    const downloadBlob = (data, fileName, mimeType) => {
+        const blob = new Blob([data], {
+            type: mimeType
+        })
+
+        const url = window.URL.createObjectURL(blob)
+        downloadURL(url, fileName)
+        setTimeout(() => window.URL.revokeObjectURL(url), 1000)
+    }
+  </script>
+</html>
