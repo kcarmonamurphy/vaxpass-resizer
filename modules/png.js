@@ -7,8 +7,7 @@ const exportAsPNG = async (pdfDoc) => {
 
     try {
         const page = await pdf.getPage(1)
-        let scale = 1.5;
-        let viewport = page.getViewport({ scale: scale });
+        let viewport = page.getViewport({ scale: 1.5 });
 
         let canvas = document.querySelector('canvas');
 
@@ -21,13 +20,17 @@ const exportAsPNG = async (pdfDoc) => {
         let renderContext = { canvasContext: context, viewport: viewport }
         let renderTask = page.render(renderContext)
 
-        await renderTask.promise
-        return canvas.toDataURL('image/png')
-
+        const base64PNG = await renderTaskToBase64PNG(renderTask, canvas)
+        return base64PNG
     } catch (error) {
         // PDF loading error
-        console.error(reason)
+        console.error(error)
     }
+}
+
+const renderTaskToBase64PNG = async (renderTask, canvas) => {
+    await renderTask.promise
+    return canvas.toDataURL('image/png')
 }
 
 export { exportAsPNG }

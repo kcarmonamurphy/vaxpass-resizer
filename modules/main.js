@@ -6,15 +6,14 @@ PDFJS.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.work
 import { downloadBlob } from './download.js'
 import { exportAsPNG } from './png.js'
 
+const LETTER_SIZE_DIM_IN_MM = [215.9, 279.4]
+
 const readIt = async function(pdfBytes) {
     // Load the PDF document without updating its existing metadata
     const pdfDoc = await PDFDocument.load(pdfBytes, { 
         updateMetadata: false,
         ignoreEncryption: true
     })
-
-    // const bytes = await pdfDoc.save()
-    let png = await exportAsPNG(pdfBytes)
 
     // Read all available metadata fields      
     const title = pdfDoc.getTitle();
@@ -36,35 +35,28 @@ const readIt = async function(pdfBytes) {
     <li>Creation Date: ${creationDate?.toISOString()}</li>
     <li>Modification Date: ${modificationDate?.toISOString()}</li>
     `;
-
-    modifyIt(pdfDoc, png)
 }
 
-const modifyIt = async function(pdfDoc, png) {
-    const pages = pdfDoc.getPages()
-    const firstPage = pages[0]
+const createPdf = async function(png) {
+    const pdfDoc = await PDFDocument.create(LETTER_SIZE_DIM_IN_MM)
+    const pngImage = await pdfDoc.embedPng(png)
 
-    // Get the width and height of the first page
-    const { width, height } = firstPage.getSize()
+    // Get the width/height of the PNG image scaled down to 50% of its original size
+    const pngDims = pngImage.scale(0.25)
 
-    const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
+    // Add a blank page to the document
+    const page = pdfDoc.addPage()
 
-    firstPage.drawText('This text was added with JavaScript!', {
-        x: 5,
-        y: height / 2 + 300,
-        size: 50,
-        font: helveticaFont,
-        color: rgb(0.95, 0.1, 0.1),
-        rotate: degrees(-45),
+    // Draw the PNG image near the lower right corner of the JPG image
+    page.drawImage(pngImage, {
+        x: page.getWidth() / 2 - pngDims.width,
+        y: page.getHeight() / 2 - pngDims.height,
+        width: pngDims.width,
+        height: pngDims.height,
     })
 
-    console.log(png)
-
-    firstPage.setSize(width/2, height/2)
-
     const pdfBytes = await pdfDoc.save()
-
-    downloadBlob(pdfBytes, 'your-file.pdf', 'application/octet-stream');
+    return pdfBytes
 }
 
 const readPdfMetadata = async function() {
@@ -72,9 +64,13 @@ const readPdfMetadata = async function() {
     
     const reader = new FileReader()
     
-    reader.onload = function() {
+    reader.onload = async function() {
         let arrayBuffer = this.result
         readIt(arrayBuffer)
+
+        let png = await exportAsPNG(arrayBuffer)
+        const newPdfBytes = await createPdf(png)
+        downloadBlob(newPdfBytes, 'your-file.pdf', 'application/octet-stream');
     }
     
     reader.readAsArrayBuffer(selectedFile);
