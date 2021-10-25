@@ -1,7 +1,7 @@
 const PDFJS = window['pdfjs-dist/build/pdf']
 PDFJS.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js'
 
-const exportAsPNG = async (pdfDoc, canvas) => {
+const exportAsPNG = async (pdfDoc, canvas, value) => {
     var loadingTask = PDFJS.getDocument({ data: pdfDoc })
     const pdf = await loadingTask.promise
 
@@ -25,8 +25,32 @@ const exportAsPNG = async (pdfDoc, canvas) => {
     }
 }
 
-const renderTaskToBase64PNG = async (renderTask, canvas) => {
+const cropCanvas = (sourceCanvas,left,top,right,bottom) => {
+    let destCanvas = document.createElement('canvas');
+    let width = sourceCanvas.width
+    let height = sourceCanvas.height
+
+    let croppedWidth = width-left-right
+    let croppedHeight = height-top-bottom
+
+    destCanvas.width = croppedWidth
+    destCanvas.height = croppedHeight
+
+    destCanvas.getContext("2d").drawImage(
+        sourceCanvas,
+        left,top,croppedWidth,croppedHeight,
+        0,0,croppedWidth,croppedHeight)
+    return destCanvas
+}
+
+const renderTaskToBase64PNG = async (renderTask, canvas, value) => {
     await renderTask.promise
+
+    if (value) {
+        let newCanv = cropCanvas(canvas, 50, 50, 50, 50)
+        return newCanv.toDataURL('image/png')
+    }
+
     return canvas.toDataURL('image/png')
 }
 
