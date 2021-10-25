@@ -12,21 +12,25 @@ const createPdf = async function(png) {
     const templateBytes = await fetch('templates/vax_cert_template_en.pdf').then(res => res.arrayBuffer())
     const template = await PDFDocument.load(templateBytes)
 
-    const pngImage = await template.embedPng(png)
+    const creditCardSizePng = await template.embedPng(png)
 
     const pages = template.getPages()
     const firstPage = pages[0]
 
-    // Get the width/height of the PNG image scaled down to 50% of its original size
-    const pngDims = pngImage.scale(0.27)
+    let pngDims = creditCardSizePng.scale(0.28)
+    firstPage.drawImage(creditCardSizePng, {
+        x: 573,
+        y: 511,
+        width: pngDims.width,
+        height: pngDims.height,
+        rotate: degrees(90)
+    })
 
-    // Add a blank page to the document
-    // const page = pdfDoc.addPage()
-
-    // Apply the proof of vaccination PNG
-    firstPage.drawImage(pngImage, {
-        x: 575,
-        y: 507,
+    const passportSizePng = await template.embedPng(png)
+    pngDims = passportSizePng.scale(0.43)
+    firstPage.drawImage(passportSizePng, {
+        x: 557,
+        y: 103,
         width: pngDims.width,
         height: pngDims.height,
         rotate: degrees(90)
