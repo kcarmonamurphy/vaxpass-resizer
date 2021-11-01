@@ -19,20 +19,20 @@ const createPdf = async function(png) {
 
     let pngDims = creditCardSizePng.scale(0.28)
     firstPage.drawImage(creditCardSizePng, {
-        x: 573,
-        y: 511,
-        width: pngDims.width,
-        height: pngDims.height,
+        x: 574, // larget is more right
+        y: 504, // larger is higher
+        width: pngDims.width + 14.5,
+        height: pngDims.height + 2,
         rotate: degrees(90)
     })
 
     const passportSizePng = await template.embedPng(png)
     pngDims = passportSizePng.scale(0.43)
     firstPage.drawImage(passportSizePng, {
-        x: 557,
-        y: 103,
-        width: pngDims.width,
-        height: pngDims.height,
+        x: 574, 
+        y: 101,
+        width: pngDims.width + 4,
+        height: pngDims.height + 32,
         rotate: degrees(90)
     })
 
