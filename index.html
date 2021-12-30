@@ -1,1 +1,75 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"/><link rel="icon" href="/favicon.ico"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#000000"/><meta name="description" content="Web site created using create-react-app"/><link rel="apple-touch-icon" href="/logo192.png"/><link rel="manifest" href="/manifest.json"/><title>React App</title><script defer="defer" src="/static/js/main.fd13ae80.js"></script><link href="/static/css/main.073c9b0a.css" rel="stylesheet"></head><body><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"></div></body></html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="https://unpkg.com/pdf-lib@1.17.0"></script>
+    <script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
+    <script type="module" src="modules/main.js"></script>
+    <script src="https://kit.fontawesome.com/8983cd354c.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="styles.css">
+
+    <title>Proof of Vaccination Resizer</title>
+  </head>
+
+  <body>
+    <section class="hero is-small is-light">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="title">
+                    Resize your Canadian Proof of Vaccination with ease
+                </h1>
+                <p class="subtitle">
+                    Works will all province's official QR-Code-based Proof of Vaccinations
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container block">
+            <div class="columns box">
+                <div class="column is-three-quarters">
+                    <div class="file has-name is-fullwidth">
+                        <label class="file-label">
+                          <input class="file-input" type="file">
+                          <span class="file-cta">
+                            <span class="file-icon">
+                              <i class="fas fa-upload"></i>
+                            </span>
+                            <span class="file-label">
+                              Choose a file…
+                            </span>
+                          </span>
+                          <span class="file-name">
+                            Screen Shot 2017-07-29 at 15.54.25.png
+                          </span>
+                        </label>
+                    </div>
+                </div>
+                <div class="column is-one-quarter">
+                    <button class="button is-primary is-fullwidth" id="convert-button">
+                        <span>Convert</span>
+                        <span class="icon">
+                            <i class="fas fa-compress-arrows-alt"></i>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="columns">
+                <div class="column is-half">
+                    <canvas id="original-proof"></canvas>
+                </div>
+                <div class="column is-half">
+                    <canvas id="resized-proof"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>    
+  </body>
+</html>

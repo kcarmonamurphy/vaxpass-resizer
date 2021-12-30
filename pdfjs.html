@@ -1,0 +1,47 @@
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+
+    <body>
+        <canvas></canvas>
+    </body>
+
+    <script>
+        var url = 'https://file-examples-com.github.io/uploads/2017/10/file-sample_150kB.pdf';
+
+        var PDFJS = window['pdfjs-dist/build/pdf'];
+
+        PDFJS.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
+
+        var loadingTask = PDFJS.getDocument(url);
+
+        loadingTask.promise.then(function(pdf) {
+            pdf.getPage(1).then(function(page) {
+
+                var scale = 1.5;
+                var viewport = page.getViewport({ scale: scale });
+
+                var canvas = document.querySelector('canvas');
+
+                // Prepare canvas using PDF page dimensions
+                var context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                // Render PDF page into canvas context
+                var renderContext = { canvasContext: context, viewport: viewport };
+
+                var renderTask = page.render(renderContext);
+                renderTask.promise.then(function() {
+                    canvas.toDataURL('image/png')
+                });
+            });
+        }, function(reason) {
+            // PDF loading error
+            console.error(reason);
+        });
+    </script>
+</html>
