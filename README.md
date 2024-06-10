@@ -6,6 +6,8 @@ It takes in a pdf file and outputs a new file with two sizes: one that is wallet
 
 It was written in vanilla JS, using [PDFLib](https://pdf-lib.js.org/).
 
+Access a demo [here](https://kcarmonamurphy.github.io/vaxpass-resizer/)
+
 ### screengrab
 
 ![1VtuKXAMVV](https://user-images.githubusercontent.com/1145018/161455637-65aa4510-ae8e-4b95-a5f2-066dcba177fb.gif)

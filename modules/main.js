@@ -1,12 +1,10 @@
-const { PDFDocument, StandardFonts, rgb, degrees } = PDFLib
+const { PDFDocument, degrees } = PDFLib
 
 const PDFJS = window['pdfjs-dist/build/pdf']
-PDFJS.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js'
+PDFJS.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.js'
 
 import { downloadBlob } from './download.js'
 import { exportAsPNG, renderTaskToBase64PNG } from './png.js'
-
-const LETTER_SIZE_DIM_IN_MM = [215.9, 279.4]
 
 const createPdf = async function(png) {
     const templateBytes = await fetch('templates/vax_cert_template_en.pdf').then(res => res.arrayBuffer())

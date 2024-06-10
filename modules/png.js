@@ -1,5 +1,5 @@
 const PDFJS = window['pdfjs-dist/build/pdf']
-PDFJS.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js'
+PDFJS.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.3.136/pdf.worker.min.js'
 
 const exportAsPNG = async (pdfDoc, canvas, value) => {
     var loadingTask = PDFJS.getDocument({ data: pdfDoc })
